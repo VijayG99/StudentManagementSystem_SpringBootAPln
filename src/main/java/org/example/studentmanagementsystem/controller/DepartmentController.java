@@ -6,7 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.studentmanagementsystem.dto.DepartmentRequestDto;
 import org.example.studentmanagementsystem.dto.DepartmentRequestPatchDto;
 import org.example.studentmanagementsystem.dto.DepartmentResponseDto;
-import org.example.studentmanagementsystem.service.Department.DepartmentService;
+import org.example.studentmanagementsystem.service.DepartmentService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,10 @@ public class DepartmentController {
     }
 
     // GET ALL
+    @Cacheable(
+            value = "departments",
+            key = "'all'"
+    )
     @GetMapping
     public ResponseEntity<List<DepartmentResponseDto>> getAllDepartments() {
 
@@ -55,6 +60,10 @@ public class DepartmentController {
     }
 
     // GET BY ID
+    @Cacheable(
+            value = "departments",
+            key = "#id"
+    )
     @GetMapping("/{id}")
     public ResponseEntity<DepartmentResponseDto> getDepartmentById(
             @PathVariable Long id) {

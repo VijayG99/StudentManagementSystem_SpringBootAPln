@@ -1,4 +1,4 @@
-package org.example.studentmanagementsystem.service.Student;
+package org.example.studentmanagementsystem.service;
 
 import org.example.studentmanagementsystem.dto.Student.StudentRequestDto;
 import org.example.studentmanagementsystem.dto.Student.StudentRequestPatchDto;
@@ -33,9 +33,10 @@ public interface StudentService {
     // DELETE
     void deleteStudent(Long id);
 
-
+    //Multipart file
     void uploadPhoto(Long studentId, MultipartFile file);
 
+    //Retriving Multipart file
     byte[] getStudentPhoto(Long studentId);
 
     // RELATIONSHIP OPERATIONS

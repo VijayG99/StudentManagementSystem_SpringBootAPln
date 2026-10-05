@@ -6,7 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.studentmanagementsystem.dto.Course.CourseResponseDto;
 import org.example.studentmanagementsystem.dto.CourseRequestDto;
 import org.example.studentmanagementsystem.dto.CourseRequestPatchDto;
-import org.example.studentmanagementsystem.service.Course.CourseService;
+import org.example.studentmanagementsystem.service.CourseService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,10 @@ public class CourseController {
     private final CourseService courseService;
 
     // CREATE
+    @CacheEvict(
+            value = "courses",
+            allEntries = true
+    )
     @PostMapping
     public ResponseEntity<CourseResponseDto> createCourse(
             @Valid @RequestBody CourseRequestDto requestDto) {
@@ -40,6 +47,7 @@ public class CourseController {
     }
 
     // GET ALL
+    @Cacheable(value = "courses", key = "'all'")
     @GetMapping
     public ResponseEntity<List<CourseResponseDto>> getAllCourses() {
 
@@ -54,6 +62,9 @@ public class CourseController {
     }
 
     // GET BY ID
+    @Cacheable(
+            value = "courses",
+            key = "#id")
     @GetMapping("/{id}")
     public ResponseEntity<CourseResponseDto> getCourseById(
             @PathVariable Long id) {
@@ -69,6 +80,10 @@ public class CourseController {
     }
 
     // FULL UPDATE
+    @CacheEvict(
+            value = "courses",
+            allEntries = true
+    )
     @PutMapping("/{id}")
     public ResponseEntity<CourseResponseDto> updateCourse(
             @PathVariable Long id,
@@ -102,6 +117,10 @@ public class CourseController {
     }
 
     // DELETE
+    @CacheEvict(
+            value = "courses",
+            allEntries = true
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(
             @PathVariable Long id) {

@@ -20,11 +20,19 @@ public interface StudentRepository extends JpaRepository<Student,Long> {
     Page<Student> findAll(Pageable pageable);
 
     @Query("""
-        SELECT s FROM Student s
-        WHERE LOWER(s.firstName) LIKE LOWER(CONCAT('%', :search, '%'))
-           OR LOWER(s.lastName) LIKE LOWER(CONCAT('%', :search, '%'))
-           OR LOWER(s.email) LIKE LOWER(CONCAT('%', :search, '%'))
-    """)
+    SELECT DISTINCT s
+    FROM Student s
+    LEFT JOIN s.department d
+    LEFT JOIN s.courses c
+    WHERE
+           LOWER(s.firstName) LIKE LOWER(CONCAT('%', :search, '%'))
+        OR LOWER(s.lastName) LIKE LOWER(CONCAT('%', :search, '%'))
+        OR LOWER(s.email) LIKE LOWER(CONCAT('%', :search, '%'))
+        OR s.phone LIKE CONCAT('%', :search, '%')
+        OR LOWER(d.name) LIKE LOWER(CONCAT('%', :search, '%'))
+        OR LOWER(c.name) LIKE LOWER(CONCAT('%', :search, '%'))
+        OR LOWER(c.code) LIKE LOWER(CONCAT('%', :search, '%'))
+""")
     Page<Student> searchStudents(
             @Param("search") String search,
             Pageable pageable

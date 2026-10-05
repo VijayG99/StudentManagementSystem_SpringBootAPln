@@ -1,4 +1,4 @@
-package org.example.studentmanagementsystem.service.Department;
+package org.example.studentmanagementsystem.service;
 
 import org.example.studentmanagementsystem.dto.DepartmentRequestDto;
 import org.example.studentmanagementsystem.dto.DepartmentRequestPatchDto;

@@ -1,4 +1,4 @@
-package org.example.studentmanagementsystem.service.Student;
+package org.example.studentmanagementsystem.service.Impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,7 @@ import org.example.studentmanagementsystem.repository.CourseRepository;
 import org.example.studentmanagementsystem.repository.DepartmentRepository;
 import org.example.studentmanagementsystem.repository.StudentRepository;
 import org.example.studentmanagementsystem.service.FileStorageService;
+import org.example.studentmanagementsystem.service.StudentService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -110,8 +111,13 @@ public class StudentServiceImpl implements StudentService {
     // GET ALL STUDENTS
     // =========================================================
 
+
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(
+            value = "students",
+            key = "'all:' + (#search == null ? '' : #search.trim()) + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort"
+    )
     public Page<StudentResponseDto> getAllStudents(
             String search,
             Pageable pageable) {
@@ -623,7 +629,6 @@ public class StudentServiceImpl implements StudentService {
                 .dateOfBirth(request.getDateOfBirth())
                 .build();
     }
-
     // =========================================================
     // ENTITY -> RESPONSE DTO
     // =========================================================
@@ -656,4 +661,6 @@ public class StudentServiceImpl implements StudentService {
                 )
                 .build();
     }
+
+
 }

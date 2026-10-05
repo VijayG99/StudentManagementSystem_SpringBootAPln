@@ -1,5 +1,6 @@
-package org.example.studentmanagementsystem.service;
+package org.example.studentmanagementsystem.service.Impl;
 
+import org.example.studentmanagementsystem.service.FileStorageService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -96,4 +97,6 @@ public class FileStorageServiceImpl implements FileStorageService {
             throw new RuntimeException("Failed to read file", exception);
         }
     }
+
+
 }

@@ -1,4 +1,4 @@
-package org.example.studentmanagementsystem.service.Course;
+package org.example.studentmanagementsystem.service;
 
 import org.example.studentmanagementsystem.dto.Course.CourseResponseDto;
 import org.example.studentmanagementsystem.dto.CourseRequestDto;

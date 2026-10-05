@@ -1,4 +1,4 @@
-package org.example.studentmanagementsystem.service.Auth;
+package org.example.studentmanagementsystem.service.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.studentmanagementsystem.Security.JwtService;
@@ -10,6 +10,7 @@ import org.example.studentmanagementsystem.entity.User;
 import org.example.studentmanagementsystem.exception.DuplicateResourceException;
 import org.example.studentmanagementsystem.repository.UserRepository;
 
+import org.example.studentmanagementsystem.service.AuthService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

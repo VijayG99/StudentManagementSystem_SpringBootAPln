@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.studentmanagementsystem.dto.Auth.LoginRequestDto;
 import org.example.studentmanagementsystem.dto.Auth.LoginResponseDto;
 import org.example.studentmanagementsystem.dto.Auth.RegisterRequestDto;
-import org.example.studentmanagementsystem.service.Auth.AuthService;
+import org.example.studentmanagementsystem.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

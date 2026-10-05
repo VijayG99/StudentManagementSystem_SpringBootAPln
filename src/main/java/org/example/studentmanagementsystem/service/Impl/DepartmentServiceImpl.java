@@ -1,4 +1,4 @@
-package org.example.studentmanagementsystem.service.Department;
+package org.example.studentmanagementsystem.service.Impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.example.studentmanagementsystem.exception.DuplicateResourceException;
 import org.example.studentmanagementsystem.exception.ResourceNotFoundException;
 import org.example.studentmanagementsystem.repository.CourseRepository;
 import org.example.studentmanagementsystem.repository.DepartmentRepository;
-import org.example.studentmanagementsystem.service.Department.DepartmentService;
+import org.example.studentmanagementsystem.service.DepartmentService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

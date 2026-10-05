@@ -1,4 +1,4 @@
-package org.example.studentmanagementsystem.service.Auth;
+package org.example.studentmanagementsystem.service;
 
 import org.example.studentmanagementsystem.dto.Auth.LoginRequestDto;
 import org.example.studentmanagementsystem.dto.Auth.LoginResponseDto;
