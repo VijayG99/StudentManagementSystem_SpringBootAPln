@@ -2,6 +2,8 @@ package org.example.studentmanagementsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.example.studentmanagementsystem.common.BaseEntity;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -13,8 +15,8 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class Student {
+@SuperBuilder
+public class Student extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

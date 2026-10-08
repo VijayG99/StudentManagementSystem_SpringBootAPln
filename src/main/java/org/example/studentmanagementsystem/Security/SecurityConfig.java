@@ -39,7 +39,9 @@ public class SecurityConfig {
                                 "/api/students/*/photo",
                                 "/api/students/**",
                                 "/api/departments/**",
-                                "/api/courses"
+                                "/api/courses",
+                                "/actuator/**",
+                                "/api/enrollment-requests"
                         ).permitAll()
 
                         .anyRequest().authenticated()

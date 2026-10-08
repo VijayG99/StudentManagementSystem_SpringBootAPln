@@ -1,129 +1,64 @@
-package org.example.studentmanagementsystem.exception;
 
-import lombok.extern.slf4j.Slf4j;
+
+import org.example.studentmanagementsystem.exception.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
-@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 1. Handle Resource Not Found (HTTP 404)
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
-            ResourceNotFoundException ex,
-            WebRequest request) {
-
-        String path = getPath(request);
-
-        log.warn("Resource not found. Path: {}, Message: {}",
-                path, ex.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.NOT_FOUND.value())
-                .error("Not Found")
-                .message(ex.getMessage())
-                .path(path)
-                .build();
-
-        return new ResponseEntity<>(
-                errorResponse,
-                HttpStatus.NOT_FOUND
-        );
+    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
+        log.error("Resource not found: {}", ex.getMessage());
+        return build(HttpStatus.NOT_FOUND, ex.getMessage(), null);
     }
 
-    // 2. Handle Duplicate Resource (HTTP 409 Conflict)
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateResourceException(
-            DuplicateResourceException ex,
-            WebRequest request) {
-
-        String path = getPath(request);
-
-        log.warn("Duplicate resource. Path: {}, Message: {}",
-                path, ex.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.CONFLICT.value())
-                .error("Conflict")
-                .message(ex.getMessage())
-                .path(path)
-                .build();
-
-        return new ResponseEntity<>(
-                errorResponse,
-                HttpStatus.CONFLICT
-        );
+    public ResponseEntity<ErrorResponse> handleDuplicate(DuplicateResourceException ex) {
+        log.error("Duplicate resource: {}", ex.getMessage());
+        return build(HttpStatus.CONFLICT, ex.getMessage(), null);
     }
 
-    // 3. Handle Bean Validation Errors (HTTP 400)
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<ErrorResponse> handleFileStorage(FileStorageException ex) {
+        log.error("File storage error: {}", ex.getMessage(), ex);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(CourseFullException.class)
+    public ResponseEntity<ErrorResponse> handleCourseFull(CourseFullException ex) {
+        log.error("Course full: {}", ex.getMessage());
+        return build(HttpStatus.CONFLICT, ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(InvalidRequestStateException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidState(InvalidRequestStateException ex) {
+        log.error("Invalid request state: {}", ex.getMessage());
+        return build(HttpStatus.CONFLICT, ex.getMessage(), null);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(
-            MethodArgumentNotValidException ex,
-            WebRequest request) {
-
-        String path = getPath(request);
-
-        String validationErrors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error ->
-                        error.getField() + ": " + error.getDefaultMessage())
-                .collect(Collectors.joining(", "));
-
-        log.warn("Validation failed. Path: {}, Errors: {}",
-                path, validationErrors);
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error("Validation Error")
-                .message(validationErrors)
-                .path(path)
-                .build();
-
-        return new ResponseEntity<>(
-                errorResponse,
-                HttpStatus.BAD_REQUEST
-        );
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors()
+                .forEach(fe -> errors.put(fe.getField(), fe.getDefaultMessage()));
+        log.error("Validation failed: {}", errors);
+        return build(HttpStatus.BAD_REQUEST, "Validation failed", errors);
     }
 
-    // 4. Handle unexpected exceptions (HTTP 500)
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(
-            Exception ex,
-            WebRequest request) {
-
-        String path = getPath(request);
-
-        log.error("Unexpected error occurred. Path: {}", path, ex);
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error("Internal Server Error")
-                .message("An unexpected error occurred. Please try again later.")
-                .path(path)
-                .build();
-
-        return new ResponseEntity<>(
-                errorResponse,
-                HttpStatus.INTERNAL_SERVER_ERROR
-        );
-    }
-
-    // Helper method to extract request path
-    private String getPath(WebRequest request) {
-        return request.getDescription(false)
-                .replace("uri=", "");
+    private ResponseEntity<ErrorResponse> build(HttpStatus status, String message, Map<String, String> errors) {
+        ErrorResponse body = new ErrorResponse(LocalDateTime.now(), status.value(), message, errors);
+        return ResponseEntity.status(status).body(body);
     }
 }
