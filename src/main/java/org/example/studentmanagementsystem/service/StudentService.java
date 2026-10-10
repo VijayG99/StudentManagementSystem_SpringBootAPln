@@ -1,5 +1,6 @@
 package org.example.studentmanagementsystem.service;
 
+import org.example.studentmanagementsystem.dto.PageResponse;
 import org.example.studentmanagementsystem.dto.Student.StudentRequestDto;
 import org.example.studentmanagementsystem.dto.Student.StudentRequestPatchDto;
 import org.example.studentmanagementsystem.dto.Student.StudentResponseDto;
@@ -15,7 +16,7 @@ public interface StudentService {
     StudentResponseDto createStudent(StudentRequestDto request);
 
     // READ
-    Page<StudentResponseDto> getAllStudents(String search,Pageable pageable);
+    PageResponse<StudentResponseDto> getAllStudents(String search, Pageable pageable);
 
     StudentResponseDto getStudentById(Long id);
 

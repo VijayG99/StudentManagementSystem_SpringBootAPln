@@ -1,15 +1,25 @@
 package org.example.studentmanagementsystem.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.studentmanagementsystem.dto.PageResponse;
+import org.example.studentmanagementsystem.dto.PaginationRequestDto;
 import org.example.studentmanagementsystem.dto.Student.StudentRequestDto;
 import org.example.studentmanagementsystem.dto.Student.StudentRequestPatchDto;
 import org.example.studentmanagementsystem.dto.Student.StudentResponseDto;
 import org.example.studentmanagementsystem.service.StudentService;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/students")
 @RequiredArgsConstructor
 @Slf4j
@@ -47,18 +58,18 @@ public class StudentController {
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    //Retrieve Collection API
-    @GetMapping("/getall")
-    public ResponseEntity<Page<StudentResponseDto>> getAllStudents(
+    // Retrieve Collection API
+    @PostMapping("/getall")
+    public ResponseEntity<PageResponse<StudentResponseDto>> getAllStudents(
             @RequestParam(required = false) String search,
-            Pageable pageable) {
+            @Valid @RequestBody PaginationRequestDto request) {
 
-        log.info("Search value from request: {}", search);
+        Pageable pageable = PageRequest.of(
+                request.getPage(),
+                request.getSize(),
+                Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy()));
 
-        Page<StudentResponseDto> students =
-                studentService.getAllStudents(search, pageable);
-
-        return ResponseEntity.ok(students);
+        return ResponseEntity.ok(studentService.getAllStudents(search, pageable));
     }
 
     //Retrieve Particular Data API

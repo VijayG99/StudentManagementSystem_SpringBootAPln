@@ -2,6 +2,7 @@ package org.example.studentmanagementsystem.service.Impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.studentmanagementsystem.dto.PageResponse;
 import org.example.studentmanagementsystem.dto.Student.StudentRequestDto;
 import org.example.studentmanagementsystem.dto.Student.StudentRequestPatchDto;
 import org.example.studentmanagementsystem.dto.Student.StudentResponseDto;
@@ -116,33 +117,21 @@ public class StudentServiceImpl implements StudentService {
     @Transactional(readOnly = true)
     @Cacheable(
             value = "students",
-            key = "'all:' + (#search == null ? '' : #search.trim()) + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort"
+            key = "(#search == null ? '' : #search.trim()) + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort"
     )
-    public Page<StudentResponseDto> getAllStudents(
-            String search,
-            Pageable pageable) {
+    public PageResponse<StudentResponseDto> getAllStudents(String search, Pageable pageable) {
 
-        log.info("Search value received: {}", search);
+        log.info("Fetching students. search='{}', page={}, size={}",
+                search, pageable.getPageNumber(), pageable.getPageSize());
 
-        Page<Student> students;
+        Page<Student> students = (search == null || search.isBlank())
+                ? studentRepository.findAll(pageable)
+                : studentRepository.searchStudents(search.trim(), pageable);
 
-        if (search == null || search.isBlank()) {
+        // Replace with your existing entity -> DTO mapping method
+        Page<StudentResponseDto> dtoPage = students.map(this::toResponse);
 
-            log.info("No search value. Fetching all students.");
-
-            students = studentRepository.findAll(pageable);
-
-        } else {
-
-            log.info("Search value present. Searching students: {}", search);
-
-            students = studentRepository.searchStudents(
-                    search.trim(),
-                    pageable
-            );
-        }
-
-        return students.map(this::toResponse);
+        return PageResponse.from(dtoPage);
     }
 
     // =========================================================
